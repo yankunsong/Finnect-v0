@@ -1,82 +1,195 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Coffee, Users, BookOpen, ArrowRight } from "lucide-react"
-import Link from "next/link"
-import UpcomingActivities from "@/components/upcoming-activities"
-import RecentAnnouncements from "@/components/recent-announcements"
+import { Clock, Share2, ThumbsUp, MessageSquare, Newspaper, Smile } from "lucide-react"
+import IcebreakerSection from "@/components/icebreaker-section"
 
-export default function Dashboard() {
+export default function NewsPage() {
+  const newsItems = [
+    {
+      id: 1,
+      title: "FINRA Announces New Hybrid Work Policy Updates",
+      summary: "New guidelines for flexible work arrangements to be implemented starting next month.",
+      date: "2 hours ago",
+      category: "Company",
+      readTime: "3 min read",
+      likes: 24,
+      comments: 8,
+    },
+    {
+      id: 2,
+      title: "Q3 Financial Results Exceed Expectations",
+      summary: "FINRA reports strong performance in regulatory oversight and member engagement for the third quarter.",
+      date: "Yesterday",
+      category: "Company",
+      readTime: "5 min read",
+      likes: 42,
+      comments: 15,
+    },
+    {
+      id: 3,
+      title: "New Compliance Training Modules Released",
+      summary: "Updated training materials now available on the learning portal for all employees.",
+      date: "2 days ago",
+      category: "Company",
+      readTime: "2 min read",
+      likes: 18,
+      comments: 3,
+    },
+    {
+      id: 4,
+      title: "Fed Raises Interest Rates by 0.25%",
+      summary:
+        "Federal Reserve announces quarter-point rate increase amid ongoing inflation concerns and economic uncertainty.",
+      date: "3 hours ago",
+      category: "US News",
+      readTime: "4 min read",
+      likes: 89,
+      comments: 23,
+    },
+    {
+      id: 5,
+      title: "SEC Proposes New Cryptocurrency Regulations",
+      summary:
+        "Securities and Exchange Commission unveils comprehensive framework for digital asset oversight and investor protection.",
+      date: "6 hours ago",
+      category: "US News",
+      readTime: "6 min read",
+      likes: 156,
+      comments: 34,
+    },
+    {
+      id: 6,
+      title: "Industry Spotlight: Cryptocurrency Regulation Trends",
+      summary:
+        "Analysis of emerging regulatory frameworks for digital assets and implications for market participants.",
+      date: "1 day ago",
+      category: "Industry",
+      readTime: "7 min read",
+      likes: 56,
+      comments: 12,
+    },
+    {
+      id: 7,
+      title: "Banking Sector Shows Resilience Amid Market Volatility",
+      summary:
+        "Major financial institutions report stable earnings despite challenging economic conditions and regulatory changes.",
+      date: "1 day ago",
+      category: "US News",
+      readTime: "5 min read",
+      likes: 73,
+      comments: 18,
+    },
+    {
+      id: 8,
+      title: "Consumer Protection Bureau Issues New Guidelines",
+      summary:
+        "CFPB releases updated rules for financial service providers to enhance consumer rights and transparency.",
+      date: "2 days ago",
+      category: "US News",
+      readTime: "4 min read",
+      likes: 45,
+      comments: 9,
+    },
+  ]
+
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
+      Company: "bg-blue-100 text-blue-800 border-blue-200",
+      "US News": "bg-red-100 text-red-800 border-red-200",
+      Finance: "bg-green-100 text-green-800 border-green-200",
+      Training: "bg-amber-100 text-amber-800 border-amber-200",
+      Industry: "bg-purple-100 text-purple-800 border-purple-200",
+      Technology: "bg-indigo-100 text-indigo-800 border-indigo-200",
+    }
+    return colors[category] || "bg-slate-100 text-slate-800 border-slate-200"
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Welcome to Finnect</h1>
-        <p className="text-muted-foreground mt-2">
-          Your hub for connecting with colleagues in FINRA's hybrid work environment
+        <h1 className="text-3xl font-bold tracking-tight">News & Icebreakers</h1>
+        <p className="text-muted-foreground mt-1">
+          Stay informed with the latest updates and find conversation starters
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Coffee className="mr-2 h-5 w-5 text-blue-600" />
-              Looking for Pals
-            </CardTitle>
-            <CardDescription>Connect for lunch, coffee, or carpooling</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4 text-sm">Find colleagues to meet up with based on shared interests and availability.</p>
-            <Link href="/pals">
-              <Button variant="outline" className="w-full">
-                Find Pals <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="news" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="news">
+            <Newspaper className="h-4 w-4 mr-2" />
+            News
+          </TabsTrigger>
+          <TabsTrigger value="icebreakers">
+            <Smile className="h-4 w-4 mr-2" />
+            Icebreakers
+          </TabsTrigger>
+        </TabsList>
 
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Users className="mr-2 h-5 w-5 text-blue-600" />
-              Clubs
-            </CardTitle>
-            <CardDescription>Join communities around shared interests</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4 text-sm">
-              Discover and participate in clubs focused on sports, investments, technology, and more.
-            </p>
-            <Link href="/clubs">
-              <Button variant="outline" className="w-full">
-                Explore Clubs <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <TabsContent value="news" className="space-y-6">
+          {/* Filter buttons for news categories */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Button variant="outline" size="sm">
+              All
+            </Button>
+            <Button variant="outline" size="sm">
+              Company
+            </Button>
+            <Button variant="outline" size="sm">
+              US News
+            </Button>
+            <Button variant="outline" size="sm">
+              Industry
+            </Button>
+          </div>
 
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <BookOpen className="mr-2 h-5 w-5 text-blue-600" />
-              News & Icebreakers
-            </CardTitle>
-            <CardDescription>Stay informed and break the ice</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4 text-sm">Get the latest company news and fun conversation starters for your meetings.</p>
-            <Link href="/news">
-              <Button variant="outline" className="w-full">
-                View Updates <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="space-y-4">
+            {newsItems.map((item) => (
+              <Card key={item.id} className="hover:shadow-md transition-all duration-200">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className={getCategoryColor(item.category)}>{item.category}</Badge>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Clock className="h-3 w-3 mr-1" />
+                          <span>{item.readTime}</span>
+                        </div>
+                      </div>
+                      <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
+                      <CardDescription className="text-base">{item.summary}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardFooter className="flex justify-between items-center pt-3 border-t">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <span>{item.date}</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>{item.likes}</span>
+                    </Button>
+                    <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                      <MessageSquare className="h-4 w-4" />
+                      <span>{item.comments}</span>
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <UpcomingActivities />
-        <RecentAnnouncements />
-      </div>
+        <TabsContent value="icebreakers">
+          <IcebreakerSection />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

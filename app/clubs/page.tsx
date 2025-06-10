@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Users, Calendar, ArrowRight } from "lucide-react"
+import { Users, Calendar, ArrowRight, Plus, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import ClubCreationForm from "@/components/club-creation-form"
 
@@ -67,52 +68,78 @@ export default function ClubsPage() {
     },
   ]
 
+  const categories = ["All", "Finance", "Technology", "Literature", "Fitness", "Compliance", "Arts"]
+
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      Finance: "bg-green-100 text-green-800",
-      Technology: "bg-blue-100 text-blue-800",
-      Literature: "bg-purple-100 text-purple-800",
-      Fitness: "bg-orange-100 text-orange-800",
-      Compliance: "bg-red-100 text-red-800",
-      Arts: "bg-pink-100 text-pink-800",
+      Finance: "bg-green-100 text-green-800 border-green-200",
+      Technology: "bg-blue-100 text-blue-800 border-blue-200",
+      Literature: "bg-purple-100 text-purple-800 border-purple-200",
+      Fitness: "bg-orange-100 text-orange-800 border-orange-200",
+      Compliance: "bg-red-100 text-red-800 border-red-200",
+      Arts: "bg-pink-100 text-pink-800 border-pink-200",
     }
-    return colors[category] || "bg-slate-100 text-slate-800"
+    return colors[category] || "bg-slate-100 text-slate-800 border-slate-200"
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Clubs</h1>
-        <p className="text-muted-foreground mt-2">
-          Join communities around shared interests and connect with colleagues
-        </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Clubs</h1>
+          <p className="text-muted-foreground mt-1">
+            Join communities around shared interests and connect with colleagues
+          </p>
+        </div>
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8">
-          <TabsTrigger value="browse">Browse Clubs</TabsTrigger>
-          <TabsTrigger value="create">Create Club</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between items-center mb-6">
+          <TabsList>
+            <TabsTrigger value="browse">Browse Clubs</TabsTrigger>
+            <TabsTrigger value="create">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Club
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="browse" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Search and Filter */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search clubs..." className="pl-10" />
+            </div>
+            <div className="flex gap-2 overflow-x-auto">
+              {categories.map((category) => (
+                <Button key={category} variant="outline" size="sm" className="whitespace-nowrap">
+                  {category}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Clubs Grid */}
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {clubs.map((club) => (
-              <Card key={club.id} className="overflow-hidden">
+              <Card key={club.id} className="hover:shadow-md transition-all duration-200">
                 <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start mb-2">
                     <CardTitle className="text-xl">{club.name}</CardTitle>
                     <Badge className={getCategoryColor(club.category)}>{club.category}</Badge>
                   </div>
                   <CardDescription className="line-clamp-2">{club.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="pb-3">
-                  <div className="flex items-center text-sm mb-4">
-                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+                <CardContent className="space-y-3">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Users className="mr-2 h-4 w-4" />
                     <span>{club.members} members</span>
                   </div>
                   {club.upcomingEvent && (
                     <div className="bg-slate-50 p-3 rounded-md">
-                      <div className="font-medium text-sm">Upcoming Event:</div>
+                      <div className="font-medium text-sm mb-1">Next Event:</div>
                       <div className="text-sm">{club.upcomingEvent}</div>
                       <div className="flex items-center text-xs text-muted-foreground mt-1">
                         <Calendar className="mr-1 h-3 w-3" />
@@ -121,7 +148,7 @@ export default function ClubsPage() {
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="border-t bg-slate-50 px-6 py-3">
+                <CardFooter>
                   <Link href={`/clubs/${club.id}`} className="w-full">
                     <Button className="w-full">
                       View Club <ArrowRight className="ml-2 h-4 w-4" />

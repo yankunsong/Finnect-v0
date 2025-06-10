@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Coffee, Utensils, Dumbbell, Car, Filter, X } from "lucide-react"
+import { Coffee, Utensils, Dumbbell, Car, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
@@ -16,10 +16,10 @@ export default function FilterOptions() {
   const [selectedFilters, setSelectedFilters] = useState<string[]>(currentFilters)
 
   const filterOptions = [
-    { id: "coffee", label: "Coffee Chats", icon: Coffee },
-    { id: "lunch", label: "Lunch Meetups", icon: Utensils },
-    { id: "gym", label: "Gym Sessions", icon: Dumbbell },
-    { id: "carpool", label: "Carpooling", icon: Car },
+    { id: "coffee", label: "Coffee", icon: Coffee },
+    { id: "lunch", label: "Lunch", icon: Utensils },
+    { id: "gym", label: "Gym", icon: Dumbbell },
+    { id: "carpool", label: "Carpool", icon: Car },
   ]
 
   // Update URL when filters change
@@ -50,36 +50,29 @@ export default function FilterOptions() {
   }
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium flex items-center">
-          <Filter className="h-4 w-4 mr-2" />
-          Filter by Type
-        </h3>
-        {selectedFilters.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={clearFilters} className="h-8 px-2 text-xs">
-            <X className="h-3 w-3 mr-1" />
-            Clear filters
-          </Button>
-        )}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {filterOptions.map((option) => (
-          <Button
-            key={option.id}
-            variant="outline"
-            size="sm"
-            onClick={() => toggleFilter(option.id)}
-            className={cn(
-              "flex items-center gap-1 h-9",
-              selectedFilters.includes(option.id) && "bg-blue-50 border-blue-200 text-blue-700",
-            )}
-          >
-            <option.icon className="h-4 w-4" />
-            {option.label}
-          </Button>
-        ))}
-      </div>
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-sm font-medium text-muted-foreground mr-2">Filter by:</span>
+      {filterOptions.map((option) => (
+        <Button
+          key={option.id}
+          variant="outline"
+          size="sm"
+          onClick={() => toggleFilter(option.id)}
+          className={cn(
+            "flex items-center gap-2",
+            selectedFilters.includes(option.id) && "bg-blue-50 border-blue-200 text-blue-700",
+          )}
+        >
+          <option.icon className="h-4 w-4" />
+          {option.label}
+        </Button>
+      ))}
+      {selectedFilters.length > 0 && (
+        <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
+          <X className="h-3 w-3 mr-1" />
+          Clear
+        </Button>
+      )}
     </div>
   )
 }

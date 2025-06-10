@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Coffee, Utensils, Dumbbell, Car, Calendar, MapPin, Clock, Users, Filter } from "lucide-react"
+import { Coffee, Utensils, Dumbbell, Car, Calendar, MapPin, Users, Filter, Plus } from "lucide-react"
 import PalRequestForm from "@/components/pal-request-form"
 import { Badge } from "@/components/ui/badge"
 import FilterOptions from "@/components/filter-options"
@@ -86,90 +86,105 @@ export default function PalsPage() {
   const getColor = (type: string) => {
     switch (type) {
       case "coffee":
-        return "bg-amber-100 text-amber-800"
+        return "bg-amber-50 border-amber-200"
       case "lunch":
-        return "bg-orange-100 text-orange-800"
+        return "bg-orange-50 border-orange-200"
       case "gym":
-        return "bg-green-100 text-green-800"
+        return "bg-green-50 border-green-200"
       case "carpool":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-50 border-blue-200"
       default:
-        return "bg-slate-100 text-slate-800"
+        return "bg-slate-50 border-slate-200"
     }
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Looking for Pals</h1>
-        <p className="text-muted-foreground mt-2">
-          Connect with colleagues for lunch, coffee, gym sessions, or carpooling
-        </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Looking for Pals</h1>
+          <p className="text-muted-foreground mt-1">
+            Connect with colleagues for lunch, coffee, gym sessions, or carpooling
+          </p>
+        </div>
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8">
-          <TabsTrigger value="browse">Browse Meetups</TabsTrigger>
-          <TabsTrigger value="create">Create Meetup</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between items-center mb-6">
+          <TabsList>
+            <TabsTrigger value="browse">Browse Meetups</TabsTrigger>
+            <TabsTrigger value="create">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Meetup
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="browse" className="space-y-6">
           <FilterOptions />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPalRequests.length > 0 ? (
-              filteredPalRequests.map((request) => (
-                <Card key={request.id} className="overflow-hidden">
-                  <CardHeader className={`${getColor(request.type)} pb-2`}>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="flex items-center text-lg">
+
+          {filteredPalRequests.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredPalRequests.map((request) => (
+                <Card
+                  key={request.id}
+                  className={`hover:shadow-md transition-all duration-200 ${getColor(request.type)}`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2">
                         {getIcon(request.type)}
-                        <span className="ml-2">{request.title}</span>
-                      </CardTitle>
+                        <CardTitle className="text-lg">{request.title}</CardTitle>
+                      </div>
                     </div>
-                    <CardDescription className="text-slate-700">
-                      Hosted by {request.user} • {request.department}
+                    <CardDescription>
+                      by {request.user} • {request.department}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pt-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center text-sm">
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-1 gap-2 text-sm">
+                      <div className="flex items-center">
                         <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>
                           {request.date} at {request.time}
                         </span>
                       </div>
-                      <div className="flex items-center text-sm">
+                      <div className="flex items-center">
                         <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>{request.location}</span>
                       </div>
-                      <div className="flex items-center text-sm">
-                        <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <div className="flex items-center">
+                        <Users className="mr-2 h-4 w-4 text-muted-foreground" />
                         <span>{request.spots} spots available</span>
                       </div>
-                      <div className="flex flex-wrap gap-2 mt-2">
+                    </div>
+                    {request.interests.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
                         {request.interests.map((interest, index) => (
-                          <Badge key={index} variant="outline" className="bg-slate-50">
+                          <Badge key={index} variant="secondary" className="text-xs">
                             {interest}
                           </Badge>
                         ))}
                       </div>
-                    </div>
+                    )}
                   </CardContent>
-                  <CardFooter className="border-t bg-slate-50 px-6 py-3">
+                  <CardFooter>
                     <Button className="w-full">Join Meetup</Button>
                   </CardFooter>
                 </Card>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                  <Filter className="h-6 w-6 text-slate-400" />
-                </div>
-                <h3 className="text-lg font-medium">No meetups match your filters</h3>
-                <p className="text-muted-foreground mt-1">Try adjusting your filter criteria or create a new meetup</p>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="mx-auto w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                <Filter className="h-8 w-8 text-slate-400" />
               </div>
-            )}
-          </div>
+              <h3 className="text-lg font-medium mb-2">No meetups match your filters</h3>
+              <p className="text-muted-foreground mb-4">Try adjusting your filter criteria or create a new meetup</p>
+              <Button variant="outline">Clear Filters</Button>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="create">
