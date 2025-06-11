@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { MessageCircle, Send, X, Bot, User, ExternalLink } from "lucide-react"
+import { MessageCircle, Send, X, Bot, User, ExternalLink, RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
@@ -22,6 +22,9 @@ interface Message {
     type: "meetup" | "club"
   }>
 }
+
+// Version identifier - update this when you want to clear chat history
+const CHAT_VERSION = "1.0.0"
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,8 +48,37 @@ export default function Chatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
+  // Clear chat history function
+  const clearChatHistory = () => {
+    const defaultMessage: Message = {
+      id: "1",
+      content:
+        "Hi! I'm your Finnect assistant. I can help you find meetups, clubs, and events. Try asking me something like 'Are there any coffee chats this week?' or 'Show me tech clubs'.",
+      isBot: true,
+      timestamp: new Date(),
+      suggestions: [
+        "Coffee chats in New York office",
+        "Investment club meetings",
+        "Gym sessions this week",
+        "Upcoming events",
+      ],
+    }
+
+    setMessages([defaultMessage])
+    localStorage.removeItem("finnect-chat-messages")
+    localStorage.setItem("finnect-chat-version", CHAT_VERSION)
+  }
+
   // Load chatbot state from localStorage on initial render
   useEffect(() => {
+    // Check version and clear if different
+    const savedVersion = localStorage.getItem("finnect-chat-version")
+    if (savedVersion !== CHAT_VERSION) {
+      console.log("Chat version mismatch, clearing history")
+      clearChatHistory()
+      return
+    }
+
     const savedChatState = localStorage.getItem("finnect-chat-open")
     if (savedChatState === "true") {
       setIsOpen(true)
@@ -65,6 +97,7 @@ export default function Chatbot() {
         setMessages(messagesWithDates)
       } catch (e) {
         console.error("Error loading saved messages:", e)
+        clearChatHistory()
       }
     }
   }, [])
@@ -77,6 +110,7 @@ export default function Chatbot() {
   // Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("finnect-chat-messages", JSON.stringify(messages))
+    localStorage.setItem("finnect-chat-version", CHAT_VERSION)
   }, [messages])
 
   const scrollToBottom = () => {
@@ -394,9 +428,20 @@ export default function Chatbot() {
       {isOpen && (
         <Card className="fixed bottom-24 right-6 w-80 sm:w-96 h-[600px] max-h-[80vh] shadow-xl z-40 flex flex-col overflow-hidden">
           <CardHeader className="pb-3 border-b flex-shrink-0">
-            <CardTitle className="flex items-center text-lg">
-              <Bot className="mr-2 h-5 w-5 text-blue-600" />
-              Finnect Assistant
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center">
+                <Bot className="mr-2 h-5 w-5 text-blue-600" />
+                Finnect Assistant
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearChatHistory}
+                className="h-8 w-8 p-0 hover:bg-slate-100"
+                title="Clear chat history"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
             </CardTitle>
           </CardHeader>
 
