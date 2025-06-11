@@ -123,6 +123,23 @@ export default function MeetupDetailPage({ params }: { params: { id: string } })
         { name: "Sophie Turner", department: "Operations", avatar: "/placeholder-user.jpg" },
       ],
     },
+    7: {
+      id: 7,
+      type: "coffee",
+      title: "Seeking Career Mentor - Coffee Chat",
+      user: "Emily Zhang",
+      department: "Junior Analyst - Risk Management",
+      date: "Next Monday",
+      time: "3:00 PM",
+      location: "Quiet Corner Café",
+      office: "New York",
+      interests: ["Career Development", "Risk Management", "Professional Growth"],
+      spots: 1,
+      description:
+        "Hi everyone! I'm a junior analyst who recently joined the Risk Management team and I'm looking for a mentor to help guide my career development. I'd love to connect with someone more experienced who can share insights about navigating FINRA, building expertise in risk management, and advancing professionally. This would be a great opportunity for both of us - I'm eager to learn and can offer a fresh perspective on current challenges. Looking for someone patient, encouraging, and willing to share their journey!",
+      duration: "1 hour",
+      attendees: [],
+    },
   }
 
   const meetup = meetupData[params.id as keyof typeof meetupData]

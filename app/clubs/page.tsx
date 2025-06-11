@@ -49,16 +49,6 @@ export default function ClubsPage() {
     },
     {
       id: 5,
-      name: "Regulatory Updates",
-      description:
-        "Stay informed about the latest regulatory changes and compliance requirements in the financial industry.",
-      members: 56,
-      category: "Compliance",
-      upcomingEvent: "New SEC Guidelines Discussion",
-      eventDate: "Wednesday, 11:00 AM",
-    },
-    {
-      id: 6,
       name: "Photography Club",
       description: "Share photography tips, techniques, and showcase your work with other photography enthusiasts.",
       members: 15,
@@ -68,7 +58,7 @@ export default function ClubsPage() {
     },
   ]
 
-  const categories = ["All", "Finance", "Technology", "Literature", "Fitness", "Compliance", "Arts"]
+  const categories = ["All", "Finance", "Technology", "Literature", "Fitness", "Arts"]
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -76,7 +66,6 @@ export default function ClubsPage() {
       Technology: "bg-blue-100 text-blue-800 border-blue-200",
       Literature: "bg-purple-100 text-purple-800 border-purple-200",
       Fitness: "bg-orange-100 text-orange-800 border-orange-200",
-      Compliance: "bg-red-100 text-red-800 border-red-200",
       Arts: "bg-pink-100 text-pink-800 border-pink-200",
     }
     return colors[category] || "bg-slate-100 text-slate-800 border-slate-200"

@@ -6,78 +6,198 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { ThumbsUp, MessageSquare, Share2, Send } from "lucide-react"
+import Link from "next/link"
 
-export default function ClubDiscussionThread() {
+interface ClubDiscussionThreadProps {
+  clubId?: string
+}
+
+export default function ClubDiscussionThread({ clubId }: ClubDiscussionThreadProps) {
   const [newComment, setNewComment] = useState("")
 
-  const discussions = [
-    {
-      id: 1,
-      user: {
-        name: "Michael Chen",
-        avatar: "/placeholder-user.jpg",
-        department: "Finance",
-      },
-      time: "Yesterday at 10:30 AM",
-      content:
-        "I came across an interesting article about sustainable investing trends. What are your thoughts on ESG factors becoming more prominent in investment decisions?",
-      likes: 12,
-      comments: 5,
-      replies: [
+  // Different discussions based on club
+  const getDiscussions = (clubId?: string) => {
+    if (clubId === "4") {
+      // Running Group discussions
+      return [
         {
-          id: 101,
+          id: 1,
           user: {
-            name: "Sarah Johnson",
-            avatar: "/placeholder-user.jpg",
-            department: "Compliance",
-          },
-          time: "Yesterday at 11:45 AM",
-          content:
-            "Great point, Michael. I've noticed more clients asking about ESG considerations in their portfolios. It's definitely becoming a major factor in investment strategies.",
-          likes: 4,
-        },
-        {
-          id: 102,
-          user: {
-            name: "David Rodriguez",
+            name: "Alex Thompson",
             avatar: "/placeholder-user.jpg",
             department: "Technology",
           },
-          time: "Yesterday at 2:15 PM",
+          time: "Yesterday at 6:30 AM",
           content:
-            "I'd be interested in discussing how we can better quantify ESG impacts. The metrics still seem to vary widely across different rating systems.",
-          likes: 3,
+            "Great turnout for yesterday's morning run! For those who missed it, we covered 5 miles through Central Park. Next week we're planning to try the Hudson River path - thoughts?",
+          likes: 8,
+          comments: 4,
+          replies: [
+            {
+              id: 101,
+              user: {
+                name: "Maria Rodriguez",
+                avatar: "/placeholder-user.jpg",
+                department: "Finance",
+              },
+              time: "Yesterday at 7:15 AM",
+              content:
+                "Hudson River path sounds perfect! The views are amazing and it's less crowded than Central Park on weekends.",
+              likes: 3,
+            },
+            {
+              id: 102,
+              user: {
+                name: "James Wilson",
+                avatar: "/placeholder-user.jpg",
+                department: "HR",
+              },
+              time: "Yesterday at 8:00 AM",
+              content: "Count me in! I've been wanting to try that route. What time are we thinking?",
+              likes: 2,
+            },
+          ],
         },
-      ],
-    },
-    {
-      id: 2,
-      user: {
-        name: "Emily Wong",
-        avatar: "/placeholder-user.jpg",
-        department: "HR",
-      },
-      time: "2 days ago",
-      content:
-        "Has anyone been following the recent changes in interest rates? I'm curious about how others are adjusting their fixed income strategies in response.",
-      likes: 8,
-      comments: 3,
-      replies: [
         {
-          id: 201,
+          id: 2,
           user: {
-            name: "Michael Chen",
+            name: "Sarah Kim",
             avatar: "/placeholder-user.jpg",
-            department: "Finance",
+            department: "Compliance",
           },
           time: "2 days ago",
           content:
-            "I've been shifting toward shorter duration bonds and exploring floating rate securities. Happy to share more details at our next meeting.",
+            "Has anyone tried the new running shoes from that store downtown? I'm looking for something with better cushioning for longer runs.",
           likes: 5,
+          comments: 3,
+          replies: [
+            {
+              id: 201,
+              user: {
+                name: "Alex Thompson",
+                avatar: "/placeholder-user.jpg",
+                department: "Technology",
+              },
+              time: "2 days ago",
+              content:
+                "I got a pair last month and they're fantastic! Really helped with my knee pain during long runs. Happy to share the model details.",
+              likes: 4,
+            },
+          ],
         },
-      ],
-    },
-  ]
+        {
+          id: 3,
+          user: {
+            name: "Maria Rodriguez",
+            avatar: "/placeholder-user.jpg",
+            department: "Finance",
+          },
+          time: "3 days ago",
+          content:
+            "Training update: Just completed my first 10-mile run preparing for the half marathon! Thanks to everyone for the encouragement and tips. The interval training suggestions really helped.",
+          likes: 12,
+          comments: 6,
+          replies: [
+            {
+              id: 301,
+              user: {
+                name: "James Wilson",
+                avatar: "/placeholder-user.jpg",
+                department: "HR",
+              },
+              time: "3 days ago",
+              content:
+                "Congratulations Maria! That's a huge milestone. You're definitely ready for the half marathon now!",
+              likes: 3,
+            },
+            {
+              id: 302,
+              user: {
+                name: "Sarah Kim",
+                avatar: "/placeholder-user.jpg",
+                department: "Compliance",
+              },
+              time: "3 days ago",
+              content: "Amazing work! I'm still working up to 5 miles consistently. Any tips for building endurance?",
+              likes: 2,
+            },
+          ],
+        },
+      ]
+    }
+
+    // Default discussions for other clubs
+    return [
+      {
+        id: 1,
+        user: {
+          name: "Michael Chen",
+          avatar: "/placeholder-user.jpg",
+          department: "Finance",
+        },
+        time: "Yesterday at 10:30 AM",
+        content:
+          "I came across an interesting article about sustainable investing trends. What are your thoughts on ESG factors becoming more prominent in investment decisions?",
+        likes: 12,
+        comments: 5,
+        replies: [
+          {
+            id: 101,
+            user: {
+              name: "Sarah Johnson",
+              avatar: "/placeholder-user.jpg",
+              department: "Compliance",
+            },
+            time: "Yesterday at 11:45 AM",
+            content:
+              "Great point, Michael. I've noticed more clients asking about ESG considerations in their portfolios. It's definitely becoming a major factor in investment strategies.",
+            likes: 4,
+          },
+          {
+            id: 102,
+            user: {
+              name: "David Rodriguez",
+              avatar: "/placeholder-user.jpg",
+              department: "Technology",
+            },
+            time: "Yesterday at 2:15 PM",
+            content:
+              "I'd be interested in discussing how we can better quantify ESG impacts. The metrics still seem to vary widely across different rating systems.",
+            likes: 3,
+          },
+        ],
+      },
+      {
+        id: 2,
+        user: {
+          name: "Emily Wong",
+          avatar: "/placeholder-user.jpg",
+          department: "HR",
+        },
+        time: "2 days ago",
+        content:
+          "Has anyone been following the recent changes in interest rates? I'm curious about how others are adjusting their fixed income strategies in response.",
+        likes: 8,
+        comments: 3,
+        replies: [
+          {
+            id: 201,
+            user: {
+              name: "Michael Chen",
+              avatar: "/placeholder-user.jpg",
+              department: "Finance",
+            },
+            time: "2 days ago",
+            content:
+              "I've been shifting toward shorter duration bonds and exploring floating rate securities. Happy to share more details at our next meeting.",
+            likes: 5,
+          },
+        ],
+      },
+    ]
+  }
+
+  const discussions = getDiscussions(clubId)
 
   const handleSubmitComment = () => {
     if (newComment.trim()) {
@@ -127,7 +247,12 @@ export default function ClubDiscussionThread() {
               </div>
             </CardHeader>
             <CardContent className="pb-3">
-              <p className="mb-4">{discussion.content}</p>
+              <Link
+                href={`/clubs/${clubId}/posts/${discussion.id}`}
+                className="block hover:text-blue-600 transition-colors"
+              >
+                <p className="mb-4 cursor-pointer">{discussion.content}</p>
+              </Link>
               <div className="flex space-x-4">
                 <Button variant="ghost" size="sm" className="flex items-center gap-1">
                   <ThumbsUp className="h-4 w-4" />

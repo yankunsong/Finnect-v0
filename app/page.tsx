@@ -1,3 +1,5 @@
+"use client"
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -6,6 +8,8 @@ import { Clock, Share2, ThumbsUp, MessageSquare, Newspaper, Smile } from "lucide
 import IcebreakerSection from "@/components/icebreaker-section"
 
 export default function NewsPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
+
   const newsItems = [
     {
       id: 1,
@@ -39,23 +43,23 @@ export default function NewsPage() {
     },
     {
       id: 4,
-      title: "Fed Raises Interest Rates by 0.25%",
+      title: "National Coffee Day Celebrations Across America",
       summary:
-        "Federal Reserve announces quarter-point rate increase amid ongoing inflation concerns and economic uncertainty.",
+        "Coffee shops nationwide offer special deals and promotions as Americans celebrate their favorite beverage with record participation.",
       date: "3 hours ago",
       category: "US News",
-      readTime: "4 min read",
+      readTime: "3 min read",
       likes: 89,
       comments: 23,
     },
     {
       id: 5,
-      title: "SEC Proposes New Cryptocurrency Regulations",
+      title: "Remote Work Trends: Americans Embrace Flexible Schedules",
       summary:
-        "Securities and Exchange Commission unveils comprehensive framework for digital asset oversight and investor protection.",
+        "New survey reveals 78% of US workers prefer hybrid work arrangements, leading to major shifts in workplace culture and city planning.",
       date: "6 hours ago",
       category: "US News",
-      readTime: "6 min read",
+      readTime: "5 min read",
       likes: 156,
       comments: 34,
     },
@@ -72,20 +76,20 @@ export default function NewsPage() {
     },
     {
       id: 7,
-      title: "Banking Sector Shows Resilience Amid Market Volatility",
+      title: "Fall Foliage Season Draws Record Tourism Numbers",
       summary:
-        "Major financial institutions report stable earnings despite challenging economic conditions and regulatory changes.",
+        "New England states report unprecedented visitor numbers as autumn colors peak, boosting local economies and outdoor recreation.",
       date: "1 day ago",
       category: "US News",
-      readTime: "5 min read",
+      readTime: "4 min read",
       likes: 73,
       comments: 18,
     },
     {
       id: 8,
-      title: "Consumer Protection Bureau Issues New Guidelines",
+      title: "Community Gardens Flourish in Urban Areas Nationwide",
       summary:
-        "CFPB releases updated rules for financial service providers to enhance consumer rights and transparency.",
+        "Cities across America see 40% increase in community garden initiatives, promoting local food production and neighborhood connections.",
       date: "2 days ago",
       category: "US News",
       readTime: "4 min read",
@@ -93,6 +97,9 @@ export default function NewsPage() {
       comments: 9,
     },
   ]
+
+  const filteredNewsItems =
+    selectedCategory === "All" ? newsItems : newsItems.filter((item) => item.category === selectedCategory)
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -131,22 +138,20 @@ export default function NewsPage() {
         <TabsContent value="news" className="space-y-6">
           {/* Filter buttons for news categories */}
           <div className="flex flex-wrap gap-2 mb-4">
-            <Button variant="outline" size="sm">
-              All
-            </Button>
-            <Button variant="outline" size="sm">
-              Company
-            </Button>
-            <Button variant="outline" size="sm">
-              US News
-            </Button>
-            <Button variant="outline" size="sm">
-              Industry
-            </Button>
+            {["All", "Company", "US News", "Industry"].map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </Button>
+            ))}
           </div>
 
           <div className="space-y-4">
-            {newsItems.map((item) => (
+            {filteredNewsItems.map((item) => (
               <Card key={item.id} className="hover:shadow-md transition-all duration-200">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">

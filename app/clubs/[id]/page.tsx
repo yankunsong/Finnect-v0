@@ -8,79 +8,161 @@ import Link from "next/link"
 import ClubDiscussionThread from "@/components/club-discussion-thread"
 
 export default function ClubDetailPage({ params }: { params: { id: string } }) {
-  // This would normally be fetched from an API based on the ID
-  const club = {
-    id: params.id,
-    name: "Investment Strategies",
-    description:
-      "Discuss market trends, investment opportunities, and financial strategies with fellow FINRA colleagues. Our club meets monthly to share insights, analyze market developments, and explore various investment approaches.",
-    members: 42,
-    category: "Finance",
-    upcomingEvents: [
-      {
-        id: 1,
-        title: "Portfolio Diversification Workshop",
-        date: "Next Tuesday, 12:00 PM",
-        location: "Conference Room A",
-        description: "Learn strategies for diversifying your investment portfolio to manage risk and maximize returns.",
-        attendees: 18,
-      },
-      {
-        id: 2,
-        title: "Market Outlook Discussion",
-        date: "June 25, 3:00 PM",
-        location: "Virtual Meeting",
-        description: "Join us for a roundtable discussion on current market trends and future outlook.",
-        attendees: 24,
-      },
-    ],
-    announcements: [
-      {
-        id: 1,
-        title: "New Club Leadership",
-        date: "2 days ago",
-        content:
-          "We're excited to announce that Sarah Johnson from Compliance will be joining our leadership team as co-chair.",
-      },
-      {
-        id: 2,
-        title: "Monthly Meeting Format Change",
-        date: "1 week ago",
-        content:
-          "Based on member feedback, we'll be restructuring our monthly meetings to include more interactive discussions and less presentation time.",
-      },
-    ],
-    members: [
-      {
-        id: 1,
-        name: "Michael Chen",
-        role: "Club Leader",
-        department: "Finance",
-        avatar: "/placeholder-user.jpg",
-      },
-      {
-        id: 2,
-        name: "Sarah Johnson",
-        role: "Co-chair",
-        department: "Compliance",
-        avatar: "/placeholder-user.jpg",
-      },
-      {
-        id: 3,
-        name: "David Rodriguez",
-        role: "Member",
-        department: "Technology",
-        avatar: "/placeholder-user.jpg",
-      },
-      {
-        id: 4,
-        name: "Emily Wong",
-        role: "Member",
-        department: "HR",
-        avatar: "/placeholder-user.jpg",
-      },
-    ],
+  // Different club data based on ID
+  const getClubData = (id: string) => {
+    if (id === "4") {
+      // Running Group specific data
+      return {
+        id: id,
+        name: "Running Group",
+        description:
+          "Join fellow runners for weekly runs, training tips, and preparation for local races. Whether you're a beginner or experienced runner, everyone is welcome!",
+        memberCount: 18,
+        category: "Fitness",
+        upcomingEvents: [
+          {
+            id: 1,
+            title: "Central Park Group Run",
+            date: "Saturday, 9:00 AM",
+            location: "Central Park - Bethesda Fountain",
+            description: "Join us for our weekly 5K group run around Central Park. All paces welcome!",
+            attendees: 12,
+          },
+          {
+            id: 2,
+            title: "NYC Marathon Training Session",
+            date: "Sunday, 7:00 AM",
+            location: "Brooklyn Bridge Park",
+            description: "Long run training session for those preparing for the NYC Marathon. 10-15 mile route.",
+            attendees: 8,
+          },
+        ],
+        announcements: [
+          {
+            id: 1,
+            title: "New Running Routes Added",
+            date: "3 days ago",
+            content:
+              "We've mapped out three new running routes around the office areas. Check out the routes section for details!",
+          },
+          {
+            id: 2,
+            title: "Running Gear Discount",
+            date: "1 week ago",
+            content:
+              "Local running store is offering 15% discount for our club members. Show your FINRA badge to get the discount.",
+          },
+        ],
+        members: [
+          {
+            id: 1,
+            name: "Alex Thompson",
+            role: "Club Leader",
+            department: "Technology",
+            avatar: "/placeholder-user.jpg",
+          },
+          {
+            id: 2,
+            name: "Maria Rodriguez",
+            role: "Co-organizer",
+            department: "Finance",
+            avatar: "/placeholder-user.jpg",
+          },
+          {
+            id: 3,
+            name: "James Wilson",
+            role: "Member",
+            department: "HR",
+            avatar: "/placeholder-user.jpg",
+          },
+          {
+            id: 4,
+            name: "Sarah Kim",
+            role: "Member",
+            department: "Compliance",
+            avatar: "/placeholder-user.jpg",
+          },
+        ],
+      }
+    }
+
+    // Default club data for other clubs
+    return {
+      id: id,
+      name: "Investment Strategies",
+      description:
+        "Discuss market trends, investment opportunities, and financial strategies with fellow FINRA colleagues. Our club meets monthly to share insights, analyze market developments, and explore various investment approaches.",
+      memberCount: 42,
+      category: "Finance",
+      upcomingEvents: [
+        {
+          id: 1,
+          title: "Portfolio Diversification Workshop",
+          date: "Next Tuesday, 12:00 PM",
+          location: "Conference Room A",
+          description:
+            "Learn strategies for diversifying your investment portfolio to manage risk and maximize returns.",
+          attendees: 18,
+        },
+        {
+          id: 2,
+          title: "Market Outlook Discussion",
+          date: "June 25, 3:00 PM",
+          location: "Virtual Meeting",
+          description: "Join us for a roundtable discussion on current market trends and future outlook.",
+          attendees: 24,
+        },
+      ],
+      announcements: [
+        {
+          id: 1,
+          title: "New Club Leadership",
+          date: "2 days ago",
+          content:
+            "We're excited to announce that Sarah Johnson from Compliance will be joining our leadership team as co-chair.",
+        },
+        {
+          id: 2,
+          title: "Monthly Meeting Format Change",
+          date: "1 week ago",
+          content:
+            "Based on member feedback, we'll be restructuring our monthly meetings to include more interactive discussions and less presentation time.",
+        },
+      ],
+      members: [
+        {
+          id: 1,
+          name: "Michael Chen",
+          role: "Club Leader",
+          department: "Finance",
+          avatar: "/placeholder-user.jpg",
+        },
+        {
+          id: 2,
+          name: "Sarah Johnson",
+          role: "Co-chair",
+          department: "Compliance",
+          avatar: "/placeholder-user.jpg",
+        },
+        {
+          id: 3,
+          name: "David Rodriguez",
+          role: "Member",
+          department: "Technology",
+          avatar: "/placeholder-user.jpg",
+        },
+        {
+          id: 4,
+          name: "Emily Wong",
+          role: "Member",
+          department: "HR",
+          avatar: "/placeholder-user.jpg",
+        },
+      ],
+    }
   }
+
+  const club = getClubData(params.id)
 
   return (
     <div className="space-y-8">
@@ -96,7 +178,7 @@ export default function ClubDetailPage({ params }: { params: { id: string } }) {
               <Badge className="bg-green-100 text-green-800">{club.category}</Badge>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Users className="mr-1 h-4 w-4" />
-                <span>{club.members} members</span>
+                <span>{club.memberCount} members</span>
               </div>
             </div>
           </div>
@@ -120,7 +202,7 @@ export default function ClubDetailPage({ params }: { params: { id: string } }) {
         </TabsList>
 
         <TabsContent value="discussions">
-          <ClubDiscussionThread />
+          <ClubDiscussionThread clubId={params.id} />
         </TabsContent>
 
         <TabsContent value="events" className="space-y-6">
@@ -173,7 +255,7 @@ export default function ClubDetailPage({ params }: { params: { id: string } }) {
                   <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
                   <AvatarFallback>
                     {member.name.charAt(0)}
-                    {member.name.split(" ")[1].charAt(0)}
+                    {member.name.split(" ")[1]?.charAt(0) || ""}
                   </AvatarFallback>
                 </Avatar>
                 <div>
