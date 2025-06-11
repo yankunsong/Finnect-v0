@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Users, Coffee, BookOpen, Menu, X } from "lucide-react"
+import { Users, Coffee, BookOpen, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
@@ -18,10 +18,9 @@ export default function Sidebar() {
   }
 
   const navigation = [
-    { name: "Dashboard", href: "/", icon: Home },
+    { name: "News & Icebreakers", href: "/", icon: BookOpen },
     { name: "Looking for Pals", href: "/pals", icon: Coffee },
     { name: "Clubs", href: "/clubs", icon: Users },
-    { name: "News & Icebreakers", href: "/news", icon: BookOpen },
   ]
 
   return (
