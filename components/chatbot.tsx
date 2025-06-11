@@ -6,7 +6,6 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { MessageCircle, Send, X, Bot, User, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -44,6 +43,41 @@ export default function Chatbot() {
   const [inputValue, setInputValue] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  // Load chatbot state from localStorage on initial render
+  useEffect(() => {
+    const savedChatState = localStorage.getItem("finnect-chat-open")
+    if (savedChatState === "true") {
+      setIsOpen(true)
+    }
+
+    // Load saved messages if they exist
+    const savedMessages = localStorage.getItem("finnect-chat-messages")
+    if (savedMessages) {
+      try {
+        const parsedMessages = JSON.parse(savedMessages)
+        // Convert string timestamps back to Date objects
+        const messagesWithDates = parsedMessages.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp),
+        }))
+        setMessages(messagesWithDates)
+      } catch (e) {
+        console.error("Error loading saved messages:", e)
+      }
+    }
+  }, [])
+
+  // Save chatbot state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("finnect-chat-open", isOpen.toString())
+  }, [isOpen])
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("finnect-chat-messages", JSON.stringify(messages))
+  }, [messages])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -359,22 +393,28 @@ export default function Chatbot() {
       {/* Chat Window */}
       {isOpen && (
         <Card className="fixed bottom-24 right-6 w-80 sm:w-96 h-[600px] max-h-[80vh] shadow-xl z-40 flex flex-col overflow-hidden">
-          <CardHeader className="pb-3 border-b">
+          <CardHeader className="pb-3 border-b flex-shrink-0">
             <CardTitle className="flex items-center text-lg">
               <Bot className="mr-2 h-5 w-5 text-blue-600" />
               Finnect Assistant
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="flex-1 p-0 flex flex-col">
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4 overflow-y-auto">
-              <div className="space-y-4 min-h-0">
+          <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
+            {/* Messages Container */}
+            <div
+              ref={messagesContainerRef}
+              className="flex-1 overflow-y-auto p-4"
+              style={{
+                scrollBehavior: "smooth",
+              }}
+            >
+              <div className="space-y-4">
                 {messages.map((message) => (
                   <div key={message.id} className={cn("flex", message.isBot ? "justify-start" : "justify-end")}>
                     <div
                       className={cn(
-                        "flex items-start space-x-2 max-w-full",
+                        "flex items-start space-x-2 max-w-[85%]",
                         message.isBot ? "" : "flex-row-reverse space-x-reverse",
                       )}
                     >
@@ -392,7 +432,7 @@ export default function Chatbot() {
                       </div>
                       <div
                         className={cn(
-                          "rounded-lg p-3 text-sm max-w-full",
+                          "rounded-lg p-3 text-sm",
                           message.isBot ? "bg-slate-100" : "bg-blue-600 text-white",
                         )}
                         style={{
@@ -405,15 +445,15 @@ export default function Chatbot() {
 
                         {/* Quick Links */}
                         {message.links && message.links.length > 0 && (
-                          <div className="mt-3 max-w-full">
+                          <div className="mt-3">
                             <div className="text-xs text-slate-600 mb-2">Quick links:</div>
-                            <div className="flex flex-wrap gap-1 max-w-full">
+                            <div className="flex flex-wrap gap-1">
                               {message.links.map((link, index) => (
-                                <Link key={index} href={link.url}>
+                                <Link key={index} href={link.url} onClick={(e) => e.stopPropagation()}>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="text-xs h-7 px-2 py-1 whitespace-nowrap text-ellipsis overflow-hidden max-w-full hover:bg-blue-50"
+                                    className="text-xs h-7 px-2 py-1 whitespace-nowrap text-ellipsis overflow-hidden hover:bg-blue-50"
                                     title={link.text}
                                   >
                                     <ExternalLink className="h-3 w-3 mr-1" />
@@ -427,15 +467,15 @@ export default function Chatbot() {
 
                         {/* Suggestions */}
                         {message.suggestions && (
-                          <div className="mt-3 max-w-full">
+                          <div className="mt-3">
                             <div className="text-xs text-slate-600 mb-2">Try asking:</div>
-                            <div className="flex flex-wrap gap-1 max-w-full">
+                            <div className="flex flex-wrap gap-1">
                               {message.suggestions.map((suggestion, index) => (
                                 <Button
                                   key={index}
                                   variant="outline"
                                   size="sm"
-                                  className="text-xs h-7 px-2 py-1 whitespace-nowrap text-ellipsis overflow-hidden max-w-full"
+                                  className="text-xs h-7 px-2 py-1 whitespace-nowrap text-ellipsis overflow-hidden"
                                   onClick={() => handleSuggestionClick(suggestion)}
                                   title={suggestion}
                                 >
@@ -453,7 +493,7 @@ export default function Chatbot() {
                 {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="flex items-start space-x-2" style={{ maxWidth: "65%" }}>
+                    <div className="flex items-start space-x-2 max-w-[85%]">
                       <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                         <Bot className="h-4 w-4 text-blue-600" />
                       </div>
@@ -475,10 +515,10 @@ export default function Chatbot() {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
 
             {/* Input */}
-            <div className="border-t p-4">
+            <div className="border-t p-4 flex-shrink-0">
               <div className="flex space-x-2">
                 <Input
                   value={inputValue}
