@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MessageCircle, Send, X, Bot, User } from "lucide-react"
+import { MessageCircle, Send, X, Bot, User, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 interface Message {
   id: string
@@ -16,6 +17,11 @@ interface Message {
   isBot: boolean
   timestamp: Date
   suggestions?: string[]
+  links?: Array<{
+    text: string
+    url: string
+    type: "meetup" | "club"
+  }>
 }
 
 export default function Chatbot() {
@@ -57,7 +63,13 @@ export default function Chatbot() {
         type: "coffee",
         date: "Today, 10:30 AM",
       },
-      { id: 2, title: "Lunch at the Cafeteria", location: "Main Office", type: "lunch", date: "Today, 12:30 PM" },
+      {
+        id: 2,
+        title: "Morning Coffee & Networking",
+        location: "Chicago Office",
+        type: "coffee",
+        date: "Tomorrow, 9:00 AM",
+      },
       {
         id: 3,
         title: "Coffee and Career Discussion",
@@ -65,7 +77,27 @@ export default function Chatbot() {
         type: "coffee",
         date: "Tomorrow, 2:00 PM",
       },
-      { id: 4, title: "Lunchtime Workout Session", location: "Company Gym", type: "gym", date: "Wednesday, 12:00 PM" },
+      {
+        id: 4,
+        title: "Lunchtime Workout Session",
+        location: "Company Gym",
+        type: "gym",
+        date: "Wednesday, 12:00 PM",
+      },
+      {
+        id: 5,
+        title: "Seeking Mentor - Coffee Chat",
+        location: "Rockville Office",
+        type: "coffee",
+        date: "Monday, 3:00 PM",
+      },
+      {
+        id: 6,
+        title: "Downtown Carpool Group",
+        location: "New York Office",
+        type: "carpool",
+        date: "Daily, 8:00 AM",
+      },
     ],
     clubs: [
       {
@@ -76,7 +108,9 @@ export default function Chatbot() {
         nextEvent: "Portfolio Workshop - Tuesday",
       },
       { id: 2, name: "Tech Innovation", category: "Technology", members: 38, nextEvent: "AI Discussion - Friday" },
-      { id: 3, name: "Running Group", category: "Fitness", members: 18, nextEvent: "Central Park Run - Saturday" },
+      { id: 3, name: "Book Club", category: "Literature", members: 25, nextEvent: "Monthly Discussion - Thursday" },
+      { id: 4, name: "Running Group", category: "Fitness", members: 18, nextEvent: "Central Park Run - Saturday" },
+      { id: 5, name: "Photography Club", category: "Arts", members: 15, nextEvent: "Photo Walk - Sunday" },
     ],
     news: [
       { id: 1, title: "New Hybrid Work Policy Updates", category: "Company", date: "2 hours ago" },
@@ -119,9 +153,12 @@ export default function Chatbot() {
     return formattedLines.join("\n")
   }
 
-  const generateBotResponse = (userMessage: string): string => {
+  const generateBotResponse = (
+    userMessage: string,
+  ): { content: string; links: Array<{ text: string; url: string; type: "meetup" | "club" }> } => {
     const message = userMessage.toLowerCase()
     let response = ""
+    const links: Array<{ text: string; url: string; type: "meetup" | "club" }> = []
 
     // Coffee chat queries
     if (message.includes("coffee") && (message.includes("new york") || message.includes("ny"))) {
@@ -131,7 +168,12 @@ export default function Chatbot() {
       if (coffeeChats.length > 0) {
         response = `I found ${coffeeChats.length} coffee chat(s) in the New York office:\n\n`
         coffeeChats.forEach((chat, i) => {
-          response += `• ${chat.title}\n  ${chat.date}`
+          response += `• ${chat.title}\n  ${chat.date}\n  ${chat.location}`
+          links.push({
+            text: chat.title,
+            url: `/pals/${chat.id}`,
+            type: "meetup",
+          })
           if (i < coffeeChats.length - 1) response += "\n\n"
         })
       } else {
@@ -145,16 +187,12 @@ export default function Chatbot() {
       response = `I found ${coffeeChats.length} coffee chat(s):\n\n`
       coffeeChats.forEach((chat, i) => {
         response += `• ${chat.title}\n  ${chat.date}\n  ${chat.location}`
+        links.push({
+          text: chat.title,
+          url: `/pals/${chat.id}`,
+          type: "meetup",
+        })
         if (i < coffeeChats.length - 1) response += "\n\n"
-      })
-    }
-    // Lunch queries
-    else if (message.includes("lunch")) {
-      const lunchMeetups = mockData.meetups.filter((m) => m.type === "lunch")
-      response = `Here are the lunch meetups:\n\n`
-      lunchMeetups.forEach((lunch, i) => {
-        response += `• ${lunch.title}\n  ${lunch.date}\n  ${lunch.location}`
-        if (i < lunchMeetups.length - 1) response += "\n\n"
       })
     }
     // Gym/workout queries
@@ -166,6 +204,11 @@ export default function Chatbot() {
         response += "Gym sessions:\n"
         gymSessions.forEach((gym, i) => {
           response += `• ${gym.title}\n  ${gym.date}`
+          links.push({
+            text: gym.title,
+            url: `/pals/${gym.id}`,
+            type: "meetup",
+          })
           if (i < gymSessions.length - 1) response += "\n"
         })
         response += "\n\n"
@@ -175,6 +218,11 @@ export default function Chatbot() {
         response += "Fitness clubs:\n"
         fitnessClubs.forEach((club, i) => {
           response += `• ${club.name}\n  ${club.members} members\n  ${club.nextEvent}`
+          links.push({
+            text: club.name,
+            url: `/clubs/${club.id}`,
+            type: "club",
+          })
           if (i < fitnessClubs.length - 1) response += "\n\n"
         })
       }
@@ -196,22 +244,41 @@ export default function Chatbot() {
       response = "Here are the clubs I found:\n\n"
       relevantClubs.forEach((club, i) => {
         response += `• ${club.name}\n  ${club.members} members\n  Next: ${club.nextEvent}`
+        links.push({
+          text: club.name,
+          url: `/clubs/${club.id}`,
+          type: "club",
+        })
         if (i < relevantClubs.length - 1) response += "\n\n"
       })
     }
     // Event queries
     else if (message.includes("event") || message.includes("this week") || message.includes("upcoming")) {
-      const upcomingEvents = [
-        "Coffee Chat with Marketing\n  Today, 10:30 AM",
-        "Portfolio Workshop\n  Tuesday, 12:00 PM",
-        "AI Discussion\n  Friday, 3:00 PM",
-        "Central Park Run\n  Saturday, 9:00 AM",
-      ]
+      const upcomingMeetups = mockData.meetups.slice(0, 4)
+      const upcomingClubs = mockData.clubs.slice(0, 2)
 
       response = "Here are the upcoming events:\n\n"
-      upcomingEvents.forEach((event, i) => {
-        response += `• ${event}`
-        if (i < upcomingEvents.length - 1) response += "\n\n"
+
+      response += "Meetups:\n"
+      upcomingMeetups.forEach((meetup, i) => {
+        response += `• ${meetup.title}\n  ${meetup.date}`
+        links.push({
+          text: meetup.title,
+          url: `/pals/${meetup.id}`,
+          type: "meetup",
+        })
+        if (i < upcomingMeetups.length - 1) response += "\n"
+      })
+
+      response += "\n\nClub Events:\n"
+      upcomingClubs.forEach((club, i) => {
+        response += `• ${club.name}\n  ${club.nextEvent}`
+        links.push({
+          text: club.name,
+          url: `/clubs/${club.id}`,
+          type: "club",
+        })
+        if (i < upcomingClubs.length - 1) response += "\n"
       })
     }
     // News queries
@@ -225,10 +292,13 @@ export default function Chatbot() {
     // Default response
     else {
       response =
-        "I can help you find meetups, clubs, events, and news on Finnect. Try asking me about:\n\n• Coffee chats or lunch meetups\n• Clubs by category (tech, finance, fitness)\n• Upcoming events this week\n• Recent news and announcements"
+        "I can help you find meetups, clubs, events, and news on Finnect. Try asking me about:\n\n• Coffee chats or gym sessions\n• Clubs by category (tech, finance, fitness)\n• Upcoming events this week\n• Recent news and announcements"
     }
 
-    return formatResponse(response)
+    return {
+      content: formatResponse(response),
+      links,
+    }
   }
 
   const handleSendMessage = async () => {
@@ -247,11 +317,13 @@ export default function Chatbot() {
 
     // Simulate typing delay
     setTimeout(() => {
+      const { content, links } = generateBotResponse(inputValue)
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: generateBotResponse(inputValue),
+        content,
         isBot: true,
         timestamp: new Date(),
+        links: links.length > 0 ? links : undefined,
       }
 
       setMessages((prev) => [...prev, botResponse])
@@ -286,7 +358,7 @@ export default function Chatbot() {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 w-72 sm:w-80 h-[500px] shadow-xl z-40 flex flex-col">
+        <Card className="fixed bottom-24 right-6 w-80 sm:w-96 h-[600px] max-h-[80vh] shadow-xl z-40 flex flex-col overflow-hidden">
           <CardHeader className="pb-3 border-b">
             <CardTitle className="flex items-center text-lg">
               <Bot className="mr-2 h-5 w-5 text-blue-600" />
@@ -296,16 +368,15 @@ export default function Chatbot() {
 
           <CardContent className="flex-1 p-0 flex flex-col">
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="flex-1 p-4 overflow-y-auto">
+              <div className="space-y-4 min-h-0">
                 {messages.map((message) => (
                   <div key={message.id} className={cn("flex", message.isBot ? "justify-start" : "justify-end")}>
                     <div
                       className={cn(
-                        "flex items-start space-x-2",
+                        "flex items-start space-x-2 max-w-full",
                         message.isBot ? "" : "flex-row-reverse space-x-reverse",
                       )}
-                      style={{ maxWidth: "65%" }}
                     >
                       <div
                         className={cn(
@@ -321,39 +392,54 @@ export default function Chatbot() {
                       </div>
                       <div
                         className={cn(
-                          "rounded-lg p-3 text-sm overflow-hidden",
+                          "rounded-lg p-3 text-sm max-w-full",
                           message.isBot ? "bg-slate-100" : "bg-blue-600 text-white",
                         )}
                         style={{
-                          width: "100%",
-                          maxWidth: "calc(100% - 40px)",
                           wordBreak: "break-word",
                           overflowWrap: "break-word",
+                          hyphens: "auto",
                         }}
                       >
-                        <div
-                          style={{
-                            whiteSpace: "pre-wrap",
-                            fontSize: "0.875rem",
-                            lineHeight: "1.25rem",
-                            width: "100%",
-                          }}
-                        >
-                          {message.content}
-                        </div>
+                        <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
+
+                        {/* Quick Links */}
+                        {message.links && message.links.length > 0 && (
+                          <div className="mt-3 max-w-full">
+                            <div className="text-xs text-slate-600 mb-2">Quick links:</div>
+                            <div className="flex flex-wrap gap-1 max-w-full">
+                              {message.links.map((link, index) => (
+                                <Link key={index} href={link.url}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-xs h-7 px-2 py-1 whitespace-nowrap text-ellipsis overflow-hidden max-w-full hover:bg-blue-50"
+                                    title={link.text}
+                                  >
+                                    <ExternalLink className="h-3 w-3 mr-1" />
+                                    {link.text.length > 15 ? `${link.text.substring(0, 15)}...` : link.text}
+                                  </Button>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Suggestions */}
                         {message.suggestions && (
-                          <div className="mt-3">
+                          <div className="mt-3 max-w-full">
                             <div className="text-xs text-slate-600 mb-2">Try asking:</div>
-                            <div className="flex flex-wrap gap-1">
+                            <div className="flex flex-wrap gap-1 max-w-full">
                               {message.suggestions.map((suggestion, index) => (
                                 <Button
                                   key={index}
                                   variant="outline"
                                   size="sm"
-                                  className="text-xs h-7 mb-1 flex-shrink-0"
+                                  className="text-xs h-7 px-2 py-1 whitespace-nowrap text-ellipsis overflow-hidden max-w-full"
                                   onClick={() => handleSuggestionClick(suggestion)}
+                                  title={suggestion}
                                 >
-                                  {suggestion}
+                                  {suggestion.length > 20 ? `${suggestion.substring(0, 20)}...` : suggestion}
                                 </Button>
                               ))}
                             </div>
